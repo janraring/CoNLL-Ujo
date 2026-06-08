@@ -1,0 +1,20 @@
+[project]
+name = "conll-ujo"
+version = "0.1.0"
+description = "An ergnomic interface for reading, writing, and manipulating CoNLL-U annotated corpora."
+authors = [
+    {name = "Jan Raring",email = "janraring@yahoo.de"}
+]
+requires-python = ">=3.12"
+dependencies = [
+    "pytest (>=9.0.3,<10.0.0)",
+    "regex (>=2026.4.4,<2027.0.0)"
+]
+
+[tool.poetry]
+packages = [{include = "conllujo", from = "src"}]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
