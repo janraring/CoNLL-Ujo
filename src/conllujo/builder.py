@@ -357,11 +357,11 @@ def tokenize(doc_or_sent: Sentence | Document):
         if space_match:
             form_surface = form[: space_match.start()]
             word = Word(id=id, form=form_surface)
+            token = Token(words=[word], form=form_surface)
         else:
             form_surface = form
             word = Word(id=id, form=form_surface, misc={"SpaceAfter": "No"})
-
-        token = Token(words=[word])
+            token = Token(words=[word], form=form_surface, misc={"SpaceAfter": "No"})
 
         sent.tokens.append(token)
         id += 1
@@ -370,7 +370,8 @@ def tokenize(doc_or_sent: Sentence | Document):
     # This dict contains "SpaceAfter=No"
     # at most so no information is lost.
     if sent[-1].words[0].misc:
-        sent[-1].words[0].misc = None
+        sent[-1].misc = {}
+        sent[-1].words[0].misc = {}
 
     # Warn user if reconstruction does not equal the original string
     reconstructed = "".join(t.words[0].text or "" for t in sent).strip()

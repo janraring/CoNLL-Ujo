@@ -2,16 +2,15 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Generator, Iterator, ClassVar, overload
+from copy import deepcopy
 
 
 @dataclass
 class CoNLLUNode:
     UNDERSCORE: ClassVar[str] = "_"
 
-    # Perhaps it would be better to let all dict
-    # fields be empty dicts by default.
     form: str | None = None
-    misc: dict[str, str] | None = None
+    misc: dict[str, str] = field(default_factory=dict)
 
     @property
     def text(self):
@@ -42,7 +41,7 @@ class CoNLLUNode:
         relator: str = "=",
     ) -> str:
         # Sort keywords for CoNLL-U complience
-        if d is None:
+        if d is None or not d:
             return self.UNDERSCORE
         kv_list = [
             f"{str(k)}{relator}{v}"
@@ -57,10 +56,10 @@ class Word(CoNLLUNode):
     lemma: str | None = None
     upos: str | None = None
     xpos: str | None = None
-    feats: dict[str, str] | None = None
+    feats: dict[str, str] = field(default_factory=dict)
     head: int | None = None
     deprel: str | None = None
-    deps: dict[int, str] | None = None
+    deps: dict[int, str] = field(default_factory=dict)
 
     def to_conllu(self):
         fields = [
@@ -118,7 +117,10 @@ class Token(CoNLLUNode):
         lines = []
         if len(self.words) > 1:
             lines.append(self._mwt_to_conllu())
-        for word in self.words:
+
+        words = deepcopy(self.words)
+        words[-1].misc = words[-1].misc | self.misc
+        for word in words:
             lines.append(word.to_conllu())
         return "\n".join(lines)
 
@@ -222,6 +224,11 @@ class Document:
         blocks.append("")
         return "\n".join(blocks)
 
+    def reindex(self) -> None:
+        for sent in self:
+            for idx, word in enumerate(sent.words, start=1):
+                word.id = idx
+
     @overload
     def save(self, path: Path) -> None: ...
     @overload
@@ -240,8 +247,17 @@ class Document:
     def __add__(self, other) -> Document:
         return Document(self.sentences + other.sentences)
 
-    def __getitem__(self, idx) -> Sentence:
-        return self.sentences[idx]
+    @overload
+    def __getitem__(self, idx: int) -> Sentence: ...
+    @overload
+    def __getitem__(self, idx: slice) -> Document: ...
+    def __getitem__(self, idx) -> Sentence | Document:
+        if isinstance(idx, int):
+            return self.sentences[idx]
+        elif isinstance(idx, slice):
+            return Document(sentences=self.sentences[idx], metadata=self.metadata)
+        else:
+            raise TypeError(f"Invalid index type: {type(idx)}")
 
     def __iter__(self) -> Iterator:
         return iter(self.sentences)
