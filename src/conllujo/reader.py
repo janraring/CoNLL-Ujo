@@ -16,9 +16,6 @@ def _post_process(doc: Document) -> Document:
     for token in doc.tokens:
         for word in token:
             if not word.space_after:
-                # dict is only created if it is also being populated
-                if token.misc is None:
-                    token.misc = {}
                 token.misc[SPACEAFTER] = NO
     return doc
 
@@ -54,7 +51,7 @@ def read_conllu(source: Path | str | object) -> Document:
         *,
         delimiter: str = "|",
         relater: str = "=",
-    ) -> dict[str, str] | None: ...
+    ) -> dict[str, str]: ...
     @overload
     def _parse_dict(
         value: str,
@@ -62,7 +59,7 @@ def read_conllu(source: Path | str | object) -> Document:
         delimiter: str = "|",
         relater: str = "=",
         dtype_key: type[str],
-    ) -> dict[str, str] | None: ...
+    ) -> dict[str, str]: ...
     @overload
     def _parse_dict(
         value: str,
@@ -70,16 +67,16 @@ def read_conllu(source: Path | str | object) -> Document:
         delimiter: str = "|",
         relater: str = "=",
         dtype_key: type[int],
-    ) -> dict[int, str] | None: ...
+    ) -> dict[int, str]: ...
     def _parse_dict(
         value: str,
         *,
         delimiter: str = "|",
         relater: str = "=",
         dtype_key: type = str,
-    ) -> dict[str, str] | dict[int, str] | None:
+    ) -> dict[str, str] | dict[int, str]:
         if value == "_":
-            return None
+            return {}
         parsed = {}
         for f in value.split(delimiter):
             kv = f.split(relater)
