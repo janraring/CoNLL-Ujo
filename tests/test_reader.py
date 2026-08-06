@@ -8,6 +8,9 @@ NO = "No"
 
 
 def test_load_empty_sent():
+    """Loading a sentence without `sent_id` and `text` metadata and
+    without having any field specified should be okey.
+    """
     raw = """_	_	_	_	_	_	_	_	_	_
 """
     doc = cujo.read_conllu(raw)
@@ -22,6 +25,7 @@ def test_load_empty_sent():
 
 
 def test_space_after():
+    """SpaceAfter is a token-level attribute."""
     raw = f"""# sent_id = sent-1
 # text = A BC DE, F.
 1	A	_	_	_	_	_	_	_	_
@@ -49,6 +53,9 @@ def test_space_after():
 
 
 def test_sent_text_vs_form():
+    """`text` is taken from the metadata while `form` is a
+    reconstruction of the text based on the token data.
+    """
     raw = f"""# sent_id = sent-1
 # text = A BC DE, F.
 1	A	_	_	_	_	_	_	_	_
@@ -68,6 +75,9 @@ def test_sent_text_vs_form():
 
 
 def test_invariance():
+    """For a well-formatted treebank, input and output
+    should agree.
+    """
     raw = f"""# sent_id = sent-1
 # text = A BC DE, F.
 1	A	_	_	_	_	_	_	_	_
