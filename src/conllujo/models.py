@@ -16,17 +16,15 @@ class CoNLLUNode:
     def text(self):
         if self.form is None:
             return None
-        if self.misc is not None and self.misc.get("SpaceAfter", "Yes") == "No":
+        if self.misc.get("SpaceAfter", "Yes") == "No":
             return self.form
         return self.form + " "
 
     @property
     def space_after(self):
-        if self.misc is None:
-            return True
-        if self.misc.get("SpaceAfter", "Yes") == "Yes":
-            return True
-        return False
+        if self.misc.get("SpaceAfter", "Yes") == "No":
+            return False
+        return True
 
     def _serialize_field(self, f: int | str | None) -> str:
         if f is None:
