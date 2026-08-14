@@ -1,10 +1,9 @@
 from copy import deepcopy
-from typing import overload
 from pathlib import Path
+from typing import overload
 
+from .constants import EMPTY_FIELD, NO, SPACEAFTER
 from .models import Document, Sentence, Token, Word
-from .constants import NO, SPACEAFTER, EMPTY_FIELD
-
 
 
 def _post_process(doc: Document) -> Document:

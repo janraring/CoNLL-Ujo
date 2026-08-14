@@ -1,16 +1,32 @@
 from __future__ import annotations
+
+from copy import deepcopy
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Generator, Iterator, overload
-from copy import deepcopy
 
-from .constants import (YES, NO, SPACEAFTER, EMPTY_FIELD, SENT_ID, TEXT, ID, 
-                        FORM, LEMMA, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS, MISC)
+from .constants import (
+    DEPREL,
+    DEPS,
+    EMPTY_FIELD,
+    FEATS,
+    FORM,
+    HEAD,
+    ID,
+    LEMMA,
+    MISC,
+    NO,
+    SENT_ID,
+    SPACEAFTER,
+    TEXT,
+    UPOS,
+    XPOS,
+    YES,
+)
 
 
 @dataclass
 class CoNLLUNode:
-
     form: str | None = None
     misc: dict[str, str] = field(default_factory=dict)
 

@@ -1,11 +1,11 @@
+import warnings
 from copy import deepcopy
 from typing import overload
-import warnings
+
 import regex as re
 
+from .constants import NEWDOC, NEWPAR, NO, SENT_ID, SPACEAFTER, TEXT
 from .models import Document, Sentence, Token, Word
-from .constants import NO, SPACEAFTER, SENT_ID, TEXT, NEWDOC, NEWPAR
-
 
 # ---------------------------------------------------------------------------
 #     Abbreviation lists (lower-cased, without trailing dot)
