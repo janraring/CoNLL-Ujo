@@ -1,4 +1,5 @@
 import conllujo as cujo
+from conllujo.constants import SPACE_AFTER, NO
 
 # TODO: Make lists of token-level `misc` fields (SpaceAfter, Typo, etc.)
 
@@ -31,11 +32,11 @@ def test_space_after():
 2-3	BC	_	_	_	_	_	_	_	_
 2	B	_	_	_	_	_	_	_	_
 3	C	_	_	_	_	_	_	_	_
-4-5	DE	_	_	_	_	_	_	_	{cujo.SPACE_AFTER}={cujo.NO}
+4-5	DE	_	_	_	_	_	_	_	{SPACE_AFTER}={NO}
 4	D	_	_	_	_	_	_	_	_
 5	E	_	_	_	_	_	_	_	_
 6	,	_	_	_	_	_	_	_	_
-7	F	_	_	_	_	_	_	_	{cujo.SPACE_AFTER}={cujo.NO}
+7	F	_	_	_	_	_	_	_	{SPACE_AFTER}={NO}
 8	.	_	_	_	_	_	_	_	_
 """
     doc = cujo.read_conllu(raw)
@@ -48,7 +49,7 @@ def test_space_after():
     assert sent[5].space_after
 
     for word in sent.words:
-        assert word.misc.get(cujo.SPACE_AFTER, None) is None
+        assert word.misc.get(SPACE_AFTER, None) is None
 
 
 def test_sent_text_vs_form():
@@ -62,11 +63,11 @@ def test_sent_text_vs_form():
 2-3	BC	_	_	_	_	_	_	_	_
 2	B	_	_	_	_	_	_	_	_
 3	C	_	_	_	_	_	_	_	_
-4-5	DE	_	_	_	_	_	_	_	{cujo.SPACE_AFTER}={cujo.NO}
+4-5	DE	_	_	_	_	_	_	_	{SPACE_AFTER}={NO}
 4	D	_	_	_	_	_	_	_	_
 5	E	_	_	_	_	_	_	_	_
 6	,	_	_	_	_	_	_	_	_
-7	F	_	_	_	_	_	_	_	{cujo.SPACE_AFTER}={cujo.NO}
+7	F	_	_	_	_	_	_	_	{SPACE_AFTER}={NO}
 8	.	_	_	_	_	_	_	_	_
 """
     doc = cujo.read_conllu(raw)
@@ -84,11 +85,11 @@ def test_invariance():
 2-3	BC	_	_	_	_	_	_	_	_
 2	B	_	_	_	_	_	_	_	_
 3	C	_	_	_	_	_	_	_	_
-4-5	DE	_	_	_	_	_	_	_	{cujo.SPACE_AFTER}={cujo.NO}
+4-5	DE	_	_	_	_	_	_	_	{SPACE_AFTER}={NO}
 4	D	_	_	_	_	_	_	_	_
 5	E	_	_	_	_	_	_	_	_
 6	,	_	_	_	_	_	_	_	_
-7	F	_	_	_	_	_	_	_	{cujo.SPACE_AFTER}={cujo.NO}
+7	F	_	_	_	_	_	_	_	{SPACE_AFTER}={NO}
 8	.	_	_	_	_	_	_	_	_
 """
     doc = cujo.read_conllu(raw)
