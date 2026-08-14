@@ -3,7 +3,7 @@ from typing import overload
 from pathlib import Path
 
 from .models import Document, Sentence, Token, Word
-from .constants import NO, SPACE_AFTER, EMPTY_FIELD
+from .constants import NO, SPACEAFTER, EMPTY_FIELD
 
 
 
@@ -14,7 +14,7 @@ def _post_process(doc: Document) -> Document:
     for token in doc.tokens:
         for word in token:
             if not word.space_after:
-                token.misc[SPACE_AFTER] = NO
+                token.misc[SPACEAFTER] = NO
     return doc
 
 

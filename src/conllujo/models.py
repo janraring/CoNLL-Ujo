@@ -4,7 +4,18 @@ from pathlib import Path
 from typing import Generator, Iterator, overload
 from copy import deepcopy
 
-from .constants import YES, NO, SPACE_AFTER, EMPTY_FIELD
+from .constants import YES, NO, SPACEAFTER, EMPTY_FIELD, SENT_ID, TEXT
+
+ID = "id"
+FORM = "form"
+LEMMA = "lemma"
+UPOS = "upos"
+XPOS = "xpos"
+FEATS = "feats"
+HEAD = "head"
+DEPREL = "deprel"
+DEPS = "deps"
+MISC = "misc"
 
 @dataclass
 class CoNLLUNode:
@@ -16,13 +27,13 @@ class CoNLLUNode:
     def text(self):
         if self.form is None:
             return None
-        if self.misc.get(SPACE_AFTER, YES) == NO:
+        if self.misc.get(SPACEAFTER, YES) == NO:
             return self.form
         return self.form + " "
 
     @property
     def space_after(self):
-        if self.misc.get(SPACE_AFTER, YES) == NO:
+        if self.misc.get(SPACEAFTER, YES) == NO:
             return False
         return True
 
@@ -76,16 +87,16 @@ class Word(CoNLLUNode):
 
     def to_dict(self):
         return {
-            "id": self._serialize_field(self.id),
-            "form": self._serialize_field(self.form),
-            "lemma": self._serialize_field(self.lemma),
-            "upos": self._serialize_field(self.upos),
-            "xpos": self._serialize_field(self.xpos),
-            "feats": self._serialize_kv_field(self.feats),
-            "head": self._serialize_field(self.head),
-            "deprel": self._serialize_field(self.deprel),
-            "deps": self._serialize_kv_field(self.deps, relator=":"),
-            "misc": self._serialize_kv_field(self.misc),
+            ID: self._serialize_field(self.id),
+            FORM: self._serialize_field(self.form),
+            LEMMA: self._serialize_field(self.lemma),
+            UPOS: self._serialize_field(self.upos),
+            XPOS: self._serialize_field(self.xpos),
+            FEATS: self._serialize_kv_field(self.feats),
+            HEAD: self._serialize_field(self.head),
+            DEPREL: self._serialize_field(self.deprel),
+            DEPS: self._serialize_kv_field(self.deps, relator=":"),
+            MISC: self._serialize_kv_field(self.misc),
         }
 
 
@@ -139,19 +150,19 @@ class Sentence:
 
     @property
     def id(self):
-        return self.metadata.get("sent_id", None)
+        return self.metadata.get(SENT_ID, None)
 
     @id.setter
     def id(self, value):
-        self.metadata["sent_id"] = value
+        self.metadata[SENT_ID] = value
 
     @property
     def text(self):
-        return self.metadata.get("text", None)
+        return self.metadata.get(TEXT, None)
 
     @text.setter
     def text(self, value):
-        self.metadata["text"] = value
+        self.metadata[TEXT] = value
 
     @property
     def form(self):

@@ -1,4 +1,6 @@
-SPACE_AFTER = "SpaceAfter"
+SPACEAFTER = "SpaceAfter"
 YES = "Yes"
 NO = "No"
 EMPTY_FIELD = "_"
+SENT_ID = "sent_id"
+TEXT = "text"
