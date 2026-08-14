@@ -4,6 +4,7 @@ import warnings
 import regex as re
 
 from .models import Document, Sentence, Token, Word
+from .constants import NO, SPACE_AFTER
 
 
 # ---------------------------------------------------------------------------
@@ -360,8 +361,8 @@ def tokenize(doc_or_sent: Sentence | Document):
             token = Token(words=[word], form=form_surface)
         else:
             form_surface = form
-            word = Word(id=id, form=form_surface, misc={"SpaceAfter": "No"})
-            token = Token(words=[word], form=form_surface, misc={"SpaceAfter": "No"})
+            word = Word(id=id, form=form_surface, misc={SPACE_AFTER: NO})
+            token = Token(words=[word], form=form_surface, misc={SPACE_AFTER: NO})
 
         sent.tokens.append(token)
         id += 1

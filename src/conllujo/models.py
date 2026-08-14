@@ -1,13 +1,13 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Generator, Iterator, ClassVar, overload
+from typing import Generator, Iterator, overload
 from copy import deepcopy
 
+from .constants import YES, NO, SPACE_AFTER, EMPTY_FIELD
 
 @dataclass
 class CoNLLUNode:
-    UNDERSCORE: ClassVar[str] = "_"
 
     form: str | None = None
     misc: dict[str, str] = field(default_factory=dict)
@@ -16,19 +16,19 @@ class CoNLLUNode:
     def text(self):
         if self.form is None:
             return None
-        if self.misc.get("SpaceAfter", "Yes") == "No":
+        if self.misc.get(SPACE_AFTER, YES) == NO:
             return self.form
         return self.form + " "
 
     @property
     def space_after(self):
-        if self.misc.get("SpaceAfter", "Yes") == "No":
+        if self.misc.get(SPACE_AFTER, YES) == NO:
             return False
         return True
 
     def _serialize_field(self, f: int | str | None) -> str:
         if f is None:
-            return self.UNDERSCORE
+            return EMPTY_FIELD
         return str(f)
 
     def _serialize_kv_field(
@@ -40,7 +40,7 @@ class CoNLLUNode:
     ) -> str:
         # Sort keywords for CoNLL-U complience
         if d is None or not d:
-            return self.UNDERSCORE
+            return EMPTY_FIELD
         kv_list = [
             f"{str(k)}{relator}{v}"
             for k, v in sorted(d.items(), key=lambda x: str(x[0]).lower())
@@ -100,13 +100,13 @@ class Token(CoNLLUNode):
         fields = [
             f"{first_id}-{last_id}",
             f"{self.form}",
-            self.UNDERSCORE,
-            self.UNDERSCORE,
-            self.UNDERSCORE,
-            self.UNDERSCORE,
-            self.UNDERSCORE,
-            self.UNDERSCORE,
-            self.UNDERSCORE,
+            EMPTY_FIELD,
+            EMPTY_FIELD,
+            EMPTY_FIELD,
+            EMPTY_FIELD,
+            EMPTY_FIELD,
+            EMPTY_FIELD,
+            EMPTY_FIELD,
             f"{misc}",
         ]
         return "\t".join(fields)
