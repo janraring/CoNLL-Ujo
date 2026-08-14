@@ -1,14 +1,32 @@
 from __future__ import annotations
+
+from copy import deepcopy
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Generator, Iterator, ClassVar, overload
-from copy import deepcopy
+from typing import Generator, Iterator, overload
+
+from .constants import (
+    DEPREL,
+    DEPS,
+    EMPTY_FIELD,
+    FEATS,
+    FORM,
+    HEAD,
+    ID,
+    LEMMA,
+    MISC,
+    NO,
+    SENT_ID,
+    SPACEAFTER,
+    TEXT,
+    UPOS,
+    XPOS,
+    YES,
+)
 
 
 @dataclass
 class CoNLLUNode:
-    UNDERSCORE: ClassVar[str] = "_"
-
     form: str | None = None
     misc: dict[str, str] = field(default_factory=dict)
 
@@ -16,19 +34,19 @@ class CoNLLUNode:
     def text(self):
         if self.form is None:
             return None
-        if self.misc.get("SpaceAfter", "Yes") == "No":
+        if self.misc.get(SPACEAFTER, YES) == NO:
             return self.form
         return self.form + " "
 
     @property
     def space_after(self):
-        if self.misc.get("SpaceAfter", "Yes") == "No":
+        if self.misc.get(SPACEAFTER, YES) == NO:
             return False
         return True
 
     def _serialize_field(self, f: int | str | None) -> str:
         if f is None:
-            return self.UNDERSCORE
+            return EMPTY_FIELD
         return str(f)
 
     def _serialize_kv_field(
@@ -40,7 +58,7 @@ class CoNLLUNode:
     ) -> str:
         # Sort keywords for CoNLL-U complience
         if d is None or not d:
-            return self.UNDERSCORE
+            return EMPTY_FIELD
         kv_list = [
             f"{str(k)}{relator}{v}"
             for k, v in sorted(d.items(), key=lambda x: str(x[0]).lower())
@@ -76,16 +94,16 @@ class Word(CoNLLUNode):
 
     def to_dict(self):
         return {
-            "id": self._serialize_field(self.id),
-            "form": self._serialize_field(self.form),
-            "lemma": self._serialize_field(self.lemma),
-            "upos": self._serialize_field(self.upos),
-            "xpos": self._serialize_field(self.xpos),
-            "feats": self._serialize_kv_field(self.feats),
-            "head": self._serialize_field(self.head),
-            "deprel": self._serialize_field(self.deprel),
-            "deps": self._serialize_kv_field(self.deps, relator=":"),
-            "misc": self._serialize_kv_field(self.misc),
+            ID: self._serialize_field(self.id),
+            FORM: self._serialize_field(self.form),
+            LEMMA: self._serialize_field(self.lemma),
+            UPOS: self._serialize_field(self.upos),
+            XPOS: self._serialize_field(self.xpos),
+            FEATS: self._serialize_kv_field(self.feats),
+            HEAD: self._serialize_field(self.head),
+            DEPREL: self._serialize_field(self.deprel),
+            DEPS: self._serialize_kv_field(self.deps, relator=":"),
+            MISC: self._serialize_kv_field(self.misc),
         }
 
 
@@ -100,13 +118,13 @@ class Token(CoNLLUNode):
         fields = [
             f"{first_id}-{last_id}",
             f"{self.form}",
-            self.UNDERSCORE,
-            self.UNDERSCORE,
-            self.UNDERSCORE,
-            self.UNDERSCORE,
-            self.UNDERSCORE,
-            self.UNDERSCORE,
-            self.UNDERSCORE,
+            EMPTY_FIELD,
+            EMPTY_FIELD,
+            EMPTY_FIELD,
+            EMPTY_FIELD,
+            EMPTY_FIELD,
+            EMPTY_FIELD,
+            EMPTY_FIELD,
             f"{misc}",
         ]
         return "\t".join(fields)
@@ -139,19 +157,19 @@ class Sentence:
 
     @property
     def id(self):
-        return self.metadata.get("sent_id", None)
+        return self.metadata.get(SENT_ID, None)
 
     @id.setter
     def id(self, value):
-        self.metadata["sent_id"] = value
+        self.metadata[SENT_ID] = value
 
     @property
     def text(self):
-        return self.metadata.get("text", None)
+        return self.metadata.get(TEXT, None)
 
     @text.setter
     def text(self, value):
-        self.metadata["text"] = value
+        self.metadata[TEXT] = value
 
     @property
     def form(self):

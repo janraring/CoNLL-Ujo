@@ -1,12 +1,9 @@
 from copy import deepcopy
-from typing import overload
 from pathlib import Path
+from typing import overload
 
-from . import Document, Sentence, Token, Word
-
-SPACEAFTER = "SpaceAfter"
-YES = "Yes"
-NO = "No"
+from .constants import EMPTY_FIELD, NO, SPACEAFTER
+from .models import Document, Sentence, Token, Word
 
 
 def _post_process(doc: Document) -> Document:
@@ -36,12 +33,12 @@ def read_conllu(source: Path | str | object) -> Document:
     # --- Helper methods for parsing the different ---
     # --- kinds of fields (int / str / dict).      ---
     def _parse_int(value) -> int | None:
-        if value == "_":
+        if value == EMPTY_FIELD:
             return None
         return int(value)
 
     def _parse_str(value) -> str | None:
-        if value == "_":
+        if value == EMPTY_FIELD:
             return None
         return str(value)
 
@@ -75,7 +72,7 @@ def read_conllu(source: Path | str | object) -> Document:
         relater: str = "=",
         dtype_key: type = str,
     ) -> dict[str, str] | dict[int, str]:
-        if value == "_":
+        if value == EMPTY_FIELD:
             return {}
         parsed = {}
         for f in value.split(delimiter):

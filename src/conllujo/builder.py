@@ -1,10 +1,11 @@
+import warnings
 from copy import deepcopy
 from typing import overload
-import warnings
+
 import regex as re
 
+from .constants import NEWDOC, NEWPAR, NO, SENT_ID, SPACEAFTER, TEXT
 from .models import Document, Sentence, Token, Word
-
 
 # ---------------------------------------------------------------------------
 #     Abbreviation lists (lower-cased, without trailing dot)
@@ -279,14 +280,14 @@ def segment_into_sentences(raw_text: str, doc_id: str | None = None) -> Document
         if chunk:
             metadata: dict[str, str | None] = {}
             if sent_counter == 1:
-                metadata["newdoc"] = None
+                metadata[NEWDOC] = None
             if par_initial:
-                metadata["newpar"] = None
+                metadata[NEWPAR] = None
             if doc_id is not None:
-                metadata["sent_id"] = f"{doc_id}-{sent_counter:04d}"
+                metadata[SENT_ID] = f"{doc_id}-{sent_counter:04d}"
             else:
-                metadata["sent_id"] = f"sentence-{sent_counter:04d}"
-            metadata["text"] = chunk
+                metadata[SENT_ID] = f"sentence-{sent_counter:04d}"
+            metadata[TEXT] = chunk
 
             sent = Sentence(metadata=metadata)
             doc.sentences.append(sent)
@@ -340,7 +341,7 @@ def tokenize(doc_or_sent: Sentence | Document):
 
     sent = deepcopy(doc_or_sent)
 
-    raw: str = sent.metadata.get("text", "") or ""
+    raw: str = sent.metadata.get(TEXT, "") or ""
     if not raw.strip():
         raise ValueError("Empty string cannot be tokenized")
 
@@ -360,8 +361,8 @@ def tokenize(doc_or_sent: Sentence | Document):
             token = Token(words=[word], form=form_surface)
         else:
             form_surface = form
-            word = Word(id=id, form=form_surface, misc={"SpaceAfter": "No"})
-            token = Token(words=[word], form=form_surface, misc={"SpaceAfter": "No"})
+            word = Word(id=id, form=form_surface, misc={SPACEAFTER: NO})
+            token = Token(words=[word], form=form_surface, misc={SPACEAFTER: NO})
 
         sent.tokens.append(token)
         id += 1
