@@ -4,10 +4,8 @@ import warnings
 import regex as re
 
 from .models import Document, Sentence, Token, Word
-from .constants import NO, SPACEAFTER, SENT_ID, TEXT
+from .constants import NO, SPACEAFTER, SENT_ID, TEXT, NEWDOC, NEWPAR
 
-NEWDOC = "newdoc"
-NEWPAR = "newpar"
 
 # ---------------------------------------------------------------------------
 #     Abbreviation lists (lower-cased, without trailing dot)

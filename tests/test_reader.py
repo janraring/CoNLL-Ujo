@@ -1,5 +1,5 @@
 import conllujo as cujo
-from conllujo.constants import SPACEAFTER, NO
+from conllujo.constants import SPACEAFTER, NO, SENT_ID, TEXT
 
 # TODO: Make lists of token-level `misc` fields (SpaceAfter, Typo, etc.)
 
@@ -26,8 +26,8 @@ def test_load_empty_sent():
 
 def test_space_after():
     """SpaceAfter is a token-level attribute."""
-    raw = f"""# SENT_ID = sent-1
-# TEXT = A BC DE, F.
+    raw = f"""# {SENT_ID} = sent-1
+# {TEXT} = A BC DE, F.
 1	A	_	_	_	_	_	_	_	_
 2-3	BC	_	_	_	_	_	_	_	_
 2	B	_	_	_	_	_	_	_	_
@@ -57,8 +57,8 @@ def test_sent_text_vs_form():
     `text` is taken from the metadata while `form` is a
     reconstruction of the text based on the token data.
     """
-    raw = f"""# SENT_ID = sent-1
-# TEXT = A BC DE, F.
+    raw = f"""# {SENT_ID} = sent-1
+# {TEXT} = A BC DE, F.
 1	A	_	_	_	_	_	_	_	_
 2-3	BC	_	_	_	_	_	_	_	_
 2	B	_	_	_	_	_	_	_	_
@@ -79,8 +79,8 @@ def test_invariance():
     """
     For a well-formatted treebank, input and output should agree.
     """
-    raw = f"""# SENT_ID = sent-1
-# TEXT = A BC DE, F.
+    raw = f"""# {SENT_ID} = sent-1
+# {TEXT} = A BC DE, F.
 1	A	_	_	_	_	_	_	_	_
 2-3	BC	_	_	_	_	_	_	_	_
 2	B	_	_	_	_	_	_	_	_

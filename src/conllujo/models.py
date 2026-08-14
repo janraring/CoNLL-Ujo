@@ -4,18 +4,9 @@ from pathlib import Path
 from typing import Generator, Iterator, overload
 from copy import deepcopy
 
-from .constants import YES, NO, SPACEAFTER, EMPTY_FIELD, SENT_ID, TEXT
+from .constants import (YES, NO, SPACEAFTER, EMPTY_FIELD, SENT_ID, TEXT, ID, 
+                        FORM, LEMMA, UPOS, XPOS, FEATS, HEAD, DEPREL, DEPS, MISC)
 
-ID = "id"
-FORM = "form"
-LEMMA = "lemma"
-UPOS = "upos"
-XPOS = "xpos"
-FEATS = "feats"
-HEAD = "head"
-DEPREL = "deprel"
-DEPS = "deps"
-MISC = "misc"
 
 @dataclass
 class CoNLLUNode:
