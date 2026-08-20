@@ -28,6 +28,7 @@ from .constants import (
 @dataclass
 class CoNLLUNode:
     form: str | None = None
+    feats: dict[str, str] = field(default_factory=dict)
     misc: dict[str, str] = field(default_factory=dict)
 
     @property
@@ -72,7 +73,6 @@ class Word(CoNLLUNode):
     lemma: str | None = None
     upos: str | None = None
     xpos: str | None = None
-    feats: dict[str, str] = field(default_factory=dict)
     head: int | None = None
     deprel: str | None = None
     deps: dict[int, str] = field(default_factory=dict)
