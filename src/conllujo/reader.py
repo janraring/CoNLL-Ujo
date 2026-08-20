@@ -6,17 +6,6 @@ from .constants import EMPTY_FIELD, NO, SPACEAFTER, CORRECT, TOKEN_LEVEL_MISC, T
 from .models import Document, Sentence, Token, Word
 
 
-def _post_process(doc: Document) -> Document:
-    doc = deepcopy(doc)
-    # Make sure the "SpaceAfter=No" attribute is also assigned
-    # at the token level.
-    for token in doc.tokens:
-        for word in token:
-            if not word.space_after:
-                token.misc[SPACEAFTER] = NO
-    return doc
-
-
 @overload
 def read_conllu(source: Path) -> Document: ...
 @overload
@@ -86,12 +75,9 @@ def read_conllu(source: Path | str | object) -> Document:
 
     # Checks whether an attribute is defined at the token level or word level.
     def _is_token_level(key: str) -> bool:
-                if key in TOKEN_LEVEL_MISC + TOKEN_LEVEL_FEATS or key.startswith(CORRECT):
-                    return True
-                else:
-                    return False
+        return key in TOKEN_LEVEL_MISC + TOKEN_LEVEL_FEATS or key.startswith(CORRECT)
 
-    # Filters out word level and token level attributes, respectively.            
+    # Filters out word level and token level attributes, respectively.
     def _filter_token_level(misc_parsed: dict[str, str]) -> dict[str, str]:
         return {k:v for k, v in misc_parsed.items() if _is_token_level(k)}
 
@@ -129,24 +115,28 @@ def read_conllu(source: Path | str | object) -> Document:
             "\t"
         )
 
+        # Parses 'misc' and 'feats'. Then filters out 
+        # the non token level attributes.
+        misc_parsed = _parse_dict(misc)
+        feats_parsed = _parse_dict(feats)
+        token = Token(form=form, 
+                      feats=_filter_token_level(feats_parsed), 
+                      misc=_filter_token_level(misc_parsed))
+
         # If the current line represents a multi-word
         # token, append a new token and set the
         # `words_to_mwt`-counter to the right number
         # of words.
-
-        misc_parsed = _parse_dict(misc)
-        feats_parsed = _parse_dict(feats)
-
-
-        token = Token(form=form, 
-                      feats=_filter_token_level(feats_parsed), 
-                      misc=_filter_token_level(misc_parsed))
-        doc.sentences[-1].tokens.append(token)
-
         if "-" in id_str:
             token_start, token_end = [int(i) for i in id_str.split("-")]
             words_to_mwt = token_end - token_start + 1
+            doc.sentences[-1].tokens.append(token)
             continue
+
+        # Append a new token if the current line is a 
+        # word that is not part of a multi-word token.
+        if not words_to_mwt:
+            doc.sentences[-1].tokens.append(token)
 
         # Create a `Word` from the current line and
         # append it to the token's list of words.
@@ -168,5 +158,4 @@ def read_conllu(source: Path | str | object) -> Document:
         # the current multi-word token.
         words_to_mwt = max(words_to_mwt - 1, 0)
 
-    doc = _post_process(doc)
     return doc
