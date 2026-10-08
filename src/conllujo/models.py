@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from copy import deepcopy
+from copy import replace
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Generator, Iterator, overload
@@ -28,21 +28,8 @@ from .constants import (
 @dataclass
 class CoNLLUNode:
     form: str | None = None
+    feats: dict[str, str] = field(default_factory=dict)
     misc: dict[str, str] = field(default_factory=dict)
-
-    @property
-    def text(self):
-        if self.form is None:
-            return None
-        if self.misc.get(SPACEAFTER, YES) == NO:
-            return self.form
-        return self.form + " "
-
-    @property
-    def space_after(self):
-        if self.misc.get(SPACEAFTER, YES) == NO:
-            return False
-        return True
 
     def _serialize_field(self, f: int | str | None) -> str:
         if f is None:
@@ -72,7 +59,6 @@ class Word(CoNLLUNode):
     lemma: str | None = None
     upos: str | None = None
     xpos: str | None = None
-    feats: dict[str, str] = field(default_factory=dict)
     head: int | None = None
     deprel: str | None = None
     deps: dict[int, str] = field(default_factory=dict)
@@ -111,17 +97,32 @@ class Word(CoNLLUNode):
 class Token(CoNLLUNode):
     words: list[Word] = field(default_factory=list)
 
+    @property
+    def text(self):
+        if self.form is None:
+            return None
+        if self.misc.get(SPACEAFTER, YES) == NO:
+            return self.form
+        return self.form + " "
+
+    @property
+    def space_after(self):
+        if self.misc.get(SPACEAFTER, YES) == NO:
+            return False
+        return True
+
     def _mwt_to_conllu(self) -> str:
         first_id = self.words[0].id
         last_id = self.words[-1].id
         misc = self._serialize_kv_field(self.misc)
+        feats = self._serialize_kv_field(self.feats)
         fields = [
             f"{first_id}-{last_id}",
             f"{self.form}",
             EMPTY_FIELD,
             EMPTY_FIELD,
             EMPTY_FIELD,
-            EMPTY_FIELD,
+            f"{feats}",
             EMPTY_FIELD,
             EMPTY_FIELD,
             EMPTY_FIELD,
@@ -133,11 +134,12 @@ class Token(CoNLLUNode):
         lines = []
         if len(self.words) > 1:
             lines.append(self._mwt_to_conllu())
-
-        words = deepcopy(self.words)
-        words[-1].misc = words[-1].misc | self.misc
-        for word in words:
+            for word in self.words:
+                lines.append(word.to_conllu())
+        else:
+            word = replace(self.words[0], misc=self.words[0].misc | self.misc)
             lines.append(word.to_conllu())
+
         return "\n".join(lines)
 
     def __getitem__(self, idx) -> Word:
@@ -237,7 +239,7 @@ class Document:
         blocks = []
         for sent in self:
             blocks.append(sent.to_conllu())
-        blocks.append("")
+#        blocks.append("")
         return "\n".join(blocks)
 
     def reindex(self) -> None:

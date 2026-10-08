@@ -91,6 +91,20 @@ def test_invariance():
 6	,	_	_	_	_	_	_	_	_
 7	F	_	_	_	_	_	_	_	{SPACEAFTER}={NO}
 8	.	_	_	_	_	_	_	_	_
+
+# {SENT_ID} = sent-1
+# {TEXT} = A BC DE, F.
+1	A	_	_	_	_	_	_	_	_
+2-3	BC	_	_	_	_	_	_	_	_
+2	B	_	_	_	_	_	_	_	_
+3	C	_	_	_	_	_	_	_	_
+4-5	DE	_	_	_	_	_	_	_	{SPACEAFTER}={NO}
+4	D	_	_	_	_	_	_	_	_
+5	E	_	_	_	_	_	_	_	_
+6	,	_	_	_	_	_	_	_	_
+7	F	_	_	_	_	_	_	_	{SPACEAFTER}={NO}
+8	.	_	_	_	_	_	_	_	_
 """
     doc = cujo.read_conllu(raw)
     assert doc.to_conllu() == raw
+    
